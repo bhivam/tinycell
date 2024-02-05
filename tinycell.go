@@ -243,6 +243,7 @@ func calculate_value(expr Expr, exprs *[]Expr, expr_i int) {
 	}
 
 	expr.is_calculating = true
+	(*exprs)[expr_i] = expr
 
 	if expr.lhs != -1 {
 		calculate_value((*exprs)[expr.lhs], exprs, expr.lhs)
