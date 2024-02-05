@@ -40,6 +40,8 @@ type Expr struct {
 	lf_literal     float64
 	rf_literal     float64
 	operation_type OpType
+	// marker for finding cycles
+	is_calculating bool
 }
 
 type Token struct {
@@ -114,7 +116,7 @@ func get_table_index(str_index string, num_cols int) int {
 }
 
 func parse_lexeme(lexeme string, num_cols int) Expr {
-	new_expression := Expr{lhs: -1, rhs: -1}
+	new_expression := Expr{lhs: -1, rhs: -1, is_calculating: false}
 
 	if len(lexeme) == 0 {
 		new_expression.expression_type = NULL
@@ -186,7 +188,7 @@ func get_num_cols(file []byte) int {
 /*
 ignoring spaces completely rn, should only be ignoring comma, newline adj whitespace
 */
-func parse_file(file []byte) []Expr {
+func parse_file(file []byte) ([]Expr, int) {
 	tokens := []Token{}
 	cur_row := 0
 	cur_col := 0
@@ -228,16 +230,62 @@ func parse_file(file []byte) []Expr {
 		expressions = append(expressions, parse_lexeme(tokens[i].lexeme, num_cols))
 	}
 
-	return expressions
+	return expressions, num_cols
+}
+
+func calculate_value(expr Expr, exprs *[]Expr, expr_i int) {
+	if expr.is_calculating {
+		panic(errors.New("Error: Cycle Found"))
+	}
+
+	if expr.expression_type != BINARY {
+		return
+	}
+
+	expr.is_calculating = true
+
+	if expr.lhs != -1 {
+		calculate_value((*exprs)[expr.lhs], exprs, expr.lhs)
+		expr.lf_literal = (*exprs)[expr.lhs].value
+	}
+
+	if expr.rhs != -1 {
+		calculate_value((*exprs)[expr.rhs], exprs, expr.rhs)
+		expr.rf_literal = (*exprs)[expr.rhs].value
+	}
+
+	expr.expression_type = LITERAL
+
+	// change depending on value
+	switch expr.operation_type {
+	case ADD:
+		expr.value = expr.rf_literal + expr.lf_literal
+	case SUB:
+		expr.value = expr.rf_literal - expr.lf_literal
+	case DIV:
+		expr.value = expr.rf_literal / expr.lf_literal
+	case MUL:
+		expr.value = expr.rf_literal * expr.lf_literal
+	}
+
+	expr.is_calculating = false
+	(*exprs)[expr_i] = expr
+	return
 }
 
 func main() {
 	dat, err := os.ReadFile("./example.csv")
 	check(err)
 
-	expressions := parse_file(dat)
+	expressions, num_cols := parse_file(dat)
 
-	for _, expression := range expressions {
-		fmt.Printf("%d %d\n", expression.lhs, expression.rhs)
+	for i := 0; i < len(expressions)/num_cols; i++ {
+		for j := 0; j < num_cols; j++ {
+			expr := expressions[i*num_cols+j]
+			calculate_value(expr, &expressions, i*num_cols+j)
+			expr = expressions[i*num_cols+j]
+			fmt.Printf("%.2f, ", expr.value)
+		}
+		fmt.Println()
 	}
 }
