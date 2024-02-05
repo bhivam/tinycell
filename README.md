@@ -14,6 +14,11 @@ and out put this:
 2, 4, 6
 ```
 
+## Usage
+Edit example.csv to have whatever content you would like.
+
+Then do `go run tinycell.go`
+
 ## WIP
 
 These are a list of things which I would like to add to the project. The priority of each of these items is idicated by '!' at the beginning. The more '!' the higher the priority
@@ -21,6 +26,7 @@ These are a list of things which I would like to add to the project. The priorit
 - !!! Create ability to do multiple operations in one cell
 - !! Add precedence operators like '()'
 - !! Add unary operators '-'
+- !! Add scope for other value types like text
 - ! Add in basic, builtin functions
 - ! Allow for user defined functions
 - ! Better error tracking
