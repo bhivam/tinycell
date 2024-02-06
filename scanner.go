@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"fmt"
 	"strconv"
 	"strings"
 )
 
-// TODO Make this scanner compatible with '.' in numbers
+// TODO ensure that when an error occurs in a token, use check(e) to skip
+// token
+
 type Scanner struct {
 	source        []byte
 	tokens        []Token
@@ -15,13 +19,13 @@ type Scanner struct {
 	equation_mode bool
 }
 
-func (sn *Scanner) scan_tokens(source []byte)  {
+func (sn *Scanner) scan_tokens(source []byte) {
 	sn.source = source
 	sn.tokens = []Token{}
 	sn.start = 0
 	sn.current = 0
 	sn.line = 1
-    
+
 	for !sn.is_at_end() {
 		sn.scan_token()
 	}
@@ -41,41 +45,57 @@ func (sn *Scanner) scan_token() {
 		sn.add_token_nl(NEW_LINE)
 	case '=':
 		lt_kind := sn.last_token().kind
-		if lt_kind == NEW_LINE || lt_kind == COMMA {
+        println(sn.last_token().to_string())
+		if lt_kind == NO_TOKEN || lt_kind == NEW_LINE || lt_kind == COMMA {
 			sn.add_token_nl(EQUAL)
 			sn.equation()
 		} else {
 			sn.advance()
 		}
+    case ' ':
+        sn.start = sn.current
 	default:
 		for sn.peek() != ',' && sn.peek() != '\n' {
 			sn.advance()
 		}
-		literal := sn.source[sn.start:sn.current]
+		literal := bytes.TrimSpace(sn.source[sn.start:sn.current])
+        num_dec := 0
+        has_non_num := false
+
 		for i := range literal {
 			b := literal[i]
-			if !is_num(b) {
-				sn.add_token(STRING, literal)
-				return
-			}
+            if b == '.' {
+                num_dec++
+            }
+
+            if !is_num(b) && b != '.' {
+                has_non_num = true 
+            }
 		}
+        
+        if num_dec > 1 || has_non_num {
+            sn.add_token(STRING, literal)
+            return
+        }
+
 		x, err := strconv.ParseFloat(string(literal), 64)
 		check(err)
-
 		sn.add_token(NUMBER, x)
 	}
 }
 
 func (sn *Scanner) equation() {
 	alpha_over := false
-	has_alpha := false
+	has_dec := false
 	for sn.peek() != ',' && sn.peek() != '\n' {
 		c := sn.peek()
+
+		fmt.Println(c, sn.source[sn.current-1])
 
 		if (c == '+' || c == '-' || c == '*' ||
 			c == '/' || c == '(' || c == ')') &&
 			sn.start < sn.current {
-			if has_alpha {
+			if is_alpha(sn.source[sn.start]) {
 				sn.add_token_nl(IDENTIFIER)
 			} else {
 				x, err := strconv.
@@ -84,7 +104,7 @@ func (sn *Scanner) equation() {
 				sn.add_token(NUMBER, x)
 			}
 			alpha_over = false
-			has_alpha = false
+			has_dec = false
 		}
 
 		c = sn.advance()
@@ -105,14 +125,26 @@ func (sn *Scanner) equation() {
 		default:
 			if is_num(c) {
 				alpha_over = true
-			} else if is_alpha(c) {
-				if alpha_over {
-					report_error("Invalid literal.", sn.line)
-				}
-				has_alpha = true
-			} else {
+			} else if c == '.' &&
+				!is_alpha(sn.source[sn.start]) && !has_dec {
+				has_dec = true
+			} else if is_alpha(c) && alpha_over {
+				report_error("Invalid literal.", sn.line)
+			} else if !is_alpha(c) || alpha_over {
 				report_error("Unexpected character.", sn.line)
 			}
+		}
+
+	}
+
+	if sn.start < sn.current {
+		if is_alpha(sn.source[sn.start]) {
+			sn.add_token_nl(IDENTIFIER)
+		} else {
+			x, err := strconv.
+				ParseFloat(string(sn.source[sn.start:sn.current]), 64)
+			check(err)
+			sn.add_token(NUMBER, x)
 		}
 	}
 }
@@ -123,7 +155,7 @@ func is_alpha(c byte) bool {
 }
 
 func is_num(c byte) bool {
-	return (c < 58 && c > 47) || c == '.'
+	return (c < 58 && c > 47)
 }
 
 func (sn *Scanner) is_at_end() bool {
@@ -131,7 +163,7 @@ func (sn *Scanner) is_at_end() bool {
 }
 
 func (sn *Scanner) advance() byte {
-    sn.current += 1
+	sn.current += 1
 	return sn.source[sn.current-1]
 }
 

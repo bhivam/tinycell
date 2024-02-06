@@ -73,5 +73,5 @@ type Token struct {
 }
 
 func (t Token) to_string() string {
-	return t.kind.to_string() + " " + t.lexeme + " " + literal_to_string(t.literal)
+	return t.kind.to_string() + " >>" + t.lexeme + "<< " + literal_to_string(t.literal)
 }
