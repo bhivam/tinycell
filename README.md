@@ -21,7 +21,7 @@ Then do `go run tinycell.go`
 
 ## WIP
 
-These are a list of things which I would like to add to the project. The priority of each of these items is idicated by '!' at the beginning. The more '!' the higher the priority
+These are a list of things which I would like to add to the project. The priority of each of these items is indicated by '!' at the beginning. The more '!' the higher the priority
 
 - !!! Create ability to do multiple operations in one cell
 - !! Add precedence operators like '()'
