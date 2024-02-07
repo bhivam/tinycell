@@ -6,7 +6,7 @@ A non-gui csv calculator inspired by [tsoding](https://github.com/tsoding/minice
 1, 2, 3
 =A1+A2, =B1+B2, =C1+C2
 ```
-and out put this:
+and output this:
 
 ```
 1, 2, 3
