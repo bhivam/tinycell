@@ -17,7 +17,9 @@ and output this:
 ## Usage
 Edit example.csv to have whatever content you would like.
 
-Then do `go run tinycell.go`
+Then do `go run tinycell.go -e <input.csv> <output.csv>`
+
+The -e command line flag will enbale printing of the expression stored in each cell of the input csv.
 
 ## Features
 ### Equations Support

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 )
@@ -33,7 +34,19 @@ func get_num_cols(file []byte) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("./example.csv")
+    show_exprs := flag.Bool("e", false,
+        `Will print the expressions parsed in each cell of the input`)
+
+    
+    flag.Parse()
+    vargs := flag.Args() 
+
+    if (len(vargs) < 2) {
+        fmt.Println("usage: tinycell [-e] <input csv> <output csv>")
+        return 
+    }
+
+	dat, err := os.ReadFile(vargs[0])
     num_cols := get_num_cols(dat)
 	check(err)
 
@@ -45,22 +58,30 @@ func main() {
    
     ps := Parser{}
     ps.parse(sn.tokens)
-
-    printer := &ASTprinter{}
-    for _, cell := range ps.cells {
-        // TODO print out the cell each one is from
-        fmt.Println(cell.expr.accept(printer))
+    
+    if *show_exprs {
+        printer := &ASTprinter{}
+        for _, cell := range ps.cells {
+            // TODO print out the cell each one is from
+            fmt.Println(cell.expr.accept(printer))
+        }
     }
+    
 
     it := &Interpreter{}
     it.interpret(ps.cells, num_cols) 
 
+    f, err := os.Create(vargs[1])
+    check(err)
+
+    defer f.Close()
+
     for i := 0; i < len(it.cells)/num_cols; i++ {
 		for j := 0; j < num_cols; j++ {
 			cell := it.cells[i*num_cols+j]
-            fmt.Print(literal_to_string(cell.value))
-			fmt.Print(", ")
+            f.Write([]byte(literal_to_string(cell.value)))
+			f.Write([]byte(", "))
 		}
-		fmt.Println()
+		f.Write([]byte{'\n'})
 	}
 }
