@@ -1,5 +1,5 @@
 ## Description
-A non-gui csv calculator inspired by youtuber/programming [tsoding](https://github.com/tsoding/minicel). The goal is to take in csv files like this:
+A non-gui csv calculator inspired by [tsoding](https://github.com/tsoding/minicel). The goal is to take in csv files like this:
 
 ```
 1, 2, 3
