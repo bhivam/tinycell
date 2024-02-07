@@ -29,7 +29,24 @@ func main() {
         return
     }
 
+    /*
     for _, token := range sn.tokens {
         fmt.Println(token.to_string()) 
     }
+    */
+
+    fmt.Println()
+    fmt.Println()
+    fmt.Println()
+    
+    ps := Parser{}
+    ps.parse(sn.tokens)
+
+   
+    printer := &ASTprinter{}
+    for _, expr := range ps.cells {
+        fmt.Println(expr.accept(printer))
+    }
+
+
 }

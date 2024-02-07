@@ -1,13 +1,15 @@
 package main
 
+import "strconv"
+
 func literal_to_string(literal any) string {
 	switch literal.(type) {
-	case string:
-		literal_string := literal.(string)
-		return literal_string
-	case int:
-		literal_int := literal.(int)
-		return string(literal_int)
+	case []byte:
+		literal_string := literal.([]byte)
+		return string(literal_string)
+	case float64:
+		literal_float := literal.(float64)
+		return  strconv.FormatFloat(literal_float, 'f', 3, 64)
 	default:
 		return "UNKNOWN_TYPE"
 	}
@@ -61,6 +63,8 @@ func (tk_type TokenType) to_string() string {
 		return "string"
 	case IDENTIFIER:
 		return "identifier"
+    case EOF:
+        return "end of file"
 	default:
 		return "UNKNOWN_TOKEN_TYPE"
 	}
@@ -73,5 +77,9 @@ type Token struct {
 }
 
 func (t Token) to_string() string {
-	return t.kind.to_string() + " >>" + t.lexeme + "<< " + literal_to_string(t.literal)
+    literal := ""
+    if t.literal != nil {
+        literal = "|" + literal_to_string(t.literal)
+    }   
+	return t.kind.to_string() + "|" + t.lexeme + literal
 }

@@ -7,9 +7,6 @@ import (
 	"strings"
 )
 
-// TODO ensure that when an error occurs in a token, use check(e) to skip
-// token
-
 type Scanner struct {
 	source        []byte
 	tokens        []Token
@@ -36,8 +33,6 @@ func (sn *Scanner) scan_tokens(source []byte) {
 func (sn *Scanner) scan_token() {
 	c := sn.advance()
 	switch c {
-	// for new line and comma add string or number if last token was
-	// also comma
 	case ',':
 		sn.add_token_nl(COMMA)
 	case '\n':
@@ -45,38 +40,36 @@ func (sn *Scanner) scan_token() {
 		sn.add_token_nl(NEW_LINE)
 	case '=':
 		lt_kind := sn.last_token().kind
-        println(sn.last_token().to_string())
 		if lt_kind == NO_TOKEN || lt_kind == NEW_LINE || lt_kind == COMMA {
 			sn.add_token_nl(EQUAL)
 			sn.equation()
 		} else {
 			sn.advance()
 		}
-    case ' ':
-        sn.start = sn.current
-	default:
+	case ' ':
+		sn.start = sn.current
+	default: // TODO Stuff these into a function to clear up our default case
 		for sn.peek() != ',' && sn.peek() != '\n' {
 			sn.advance()
 		}
 		literal := bytes.TrimSpace(sn.source[sn.start:sn.current])
-        num_dec := 0
-        has_non_num := false
+		num_dec := 0
+		has_non_num := false
 
 		for i := range literal {
 			b := literal[i]
-            if b == '.' {
-                num_dec++
-            }
-
-            if !is_num(b) && b != '.' {
-                has_non_num = true 
-            }
+			if b == '.' {
+				num_dec++
+			}
+			if !is_num(b) && b != '.' {
+				has_non_num = true
+			}
 		}
-        
-        if num_dec > 1 || has_non_num {
-            sn.add_token(STRING, literal)
-            return
-        }
+
+		if num_dec > 1 || has_non_num {
+			sn.add_token(STRING, literal)
+			return
+		}
 
 		x, err := strconv.ParseFloat(string(literal), 64)
 		check(err)
@@ -119,9 +112,9 @@ func (sn *Scanner) equation() {
 		case '/':
 			sn.add_token_nl(SLASH)
 		case '(':
-			sn.add_token_nl(RIGHT_PAREN)
-		case ')':
 			sn.add_token_nl(LEFT_PAREN)
+		case ')':
+			sn.add_token_nl(RIGHT_PAREN)
 		default:
 			if is_num(c) {
 				alpha_over = true
