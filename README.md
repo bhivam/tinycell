@@ -24,6 +24,7 @@ Then do `go run tinycell.go`
 - arithmetic e.g. A1+B3
 - negation e.g. -A1
 - grouping e.g. (10+A1)*B2
+- string concatenation e.g. "hello" + "world"
 
 ### Non-Equation Cell Data Type
 - numbers

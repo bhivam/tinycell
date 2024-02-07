@@ -48,6 +48,7 @@ func main() {
 
     printer := &ASTprinter{}
     for _, cell := range ps.cells {
+        // TODO print out the cell each one is from
         fmt.Println(cell.expr.accept(printer))
     }
 
