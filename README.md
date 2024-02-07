@@ -19,16 +19,22 @@ Edit example.csv to have whatever content you would like.
 
 Then do `go run tinycell.go`
 
-## WIP
+## Features
+### Equations Support
+- arithmetic e.g. A1+B3
+- negation e.g. -A1
+- grouping e.g. (10+A1)*B2
 
+### Non-Equation Cell Data Type
+- numbers
+- strings
+### Others
+- Cycle Detection e.g. if we place "A1" in the cell A1, then the value cannot be computed
+
+## WIP
 These are a list of things which I would like to add to the project. The priority of each of these items is indicated by '!' at the beginning. The more '!' the higher the priority
 
-- !!! Create ability to do multiple operations in one cell
-- !! Add precedence operators like '()'
-- !! Add unary operators '-'
-- !! Add scope for other value types like text
 - ! Add in basic, builtin functions
 - ! Allow for user defined functions
 - ! Better error tracking
 - ! Testing
-- ! Rewrite parser in cleaner, more exenstible way (Only after testing for each feature is added to ensure same behaviour)
