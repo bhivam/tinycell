@@ -1,12 +1,12 @@
 ## Description
-A non-gui csv calculator inspired by youtuber/programming [tsoding](https://github.com/tsoding/minicel). The goal is to take in csv files like this:
+A non-gui csv calculator inspired by [tsoding](https://github.com/tsoding/minicel). The goal is to take in csv files like this:
 
 ```
 1, 2, 3
 1, 2, 3
 =A1+A2, =B1+B2, =C1+C2
 ```
-and out put this:
+and output this:
 
 ```
 1, 2, 3
@@ -21,7 +21,7 @@ Then do `go run tinycell.go`
 
 ## WIP
 
-These are a list of things which I would like to add to the project. The priority of each of these items is idicated by '!' at the beginning. The more '!' the higher the priority
+These are a list of things which I would like to add to the project. The priority of each of these items is indicated by '!' at the beginning. The more '!' the higher the priority
 
 - !!! Create ability to do multiple operations in one cell
 - !! Add precedence operators like '()'
