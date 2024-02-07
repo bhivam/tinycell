@@ -36,8 +36,10 @@ The -e command line flag will enbale printing of the expression stored in each c
 
 ## WIP
 These are a list of things which I would like to add to the project. The priority of each of these items is indicated by '!' at the beginning. The more '!' the higher the priority
-
-- ! Add in basic, builtin functions
-- ! Allow for user defined functions
+- !! Add in basic, builtin functions
+  - exponent
+  - logarithm
+  - permutation
+  - combination
 - ! Better error tracking
 - ! Testing
