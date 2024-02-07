@@ -2,12 +2,11 @@ package main
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Parser struct {
 	tokens  []Token
-	cells   []Expr
+	cells   []Cell
 	current int
 }
 
@@ -25,18 +24,16 @@ literal    -> NUMBER | STRING
 
 func (ps *Parser) parse(tokens []Token) {
 	ps.tokens = tokens
-    ps.cells = []Expr{}
+    ps.cells = []Cell{}
 	ps.current = 0
 
 	for !ps.is_at_end() {
-		ps.cells = append(ps.cells, ps.cell())
+        ps.cells = append(ps.cells, Cell{expr: ps.cell()})
 	}
 }
 
 func (ps *Parser) cell() Expr {
 	expr := ps.expression()
-    printer := &ASTprinter{}
-    fmt.Println(expr.accept(printer))
 	if ps.match(NEW_LINE, COMMA, EOF) {
 		return expr
 	}

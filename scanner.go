@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -82,8 +81,6 @@ func (sn *Scanner) equation() {
 	has_dec := false
 	for sn.peek() != ',' && sn.peek() != '\n' {
 		c := sn.peek()
-
-		fmt.Println(c, sn.source[sn.current-1])
 
 		if (c == '+' || c == '-' || c == '*' ||
 			c == '/' || c == '(' || c == ')') &&
